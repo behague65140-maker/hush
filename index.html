@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hush — L'IA qui répond à vos DMs.</title>
+<meta name="description" content="Une IA conversationnelle qui répond à vos DMs Instagram comme vous le feriez. Pour les marques DTC.">
+<meta property="og:title" content="hush — L'IA qui répond à vos DMs.">
+<meta property="og:description" content="Une IA conversationnelle qui répond à vos DMs Instagram comme vous le feriez. Pour les marques DTC.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #0F0F0F;
+  --bg-elevated: #141414;
+  --bg-card: rgba(255, 255, 255, 0.02);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-bright: rgba(255, 255, 255, 0.12);
+  --text-primary: #F5F1EB;
+  --text-secondary: rgba(245, 241, 235, 0.65);
+  --text-tertiary: rgba(245, 241, 235, 0.45);
+  --accent: #A88FAC;
+  --accent-bright: #C8A8CC;
+  --accent-dim: rgba(168, 143, 172, 0.15);
+  --max-width: 1240px;
+  --section-gap: clamp(96px, 14vw, 192px);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-primary);
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow-x: hidden;
+  font-feature-settings: "ss01", "cv11";
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
+/* Container */
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 clamp(20px, 4vw, 48px);
+}
+
+/* Navigation */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 20px 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(10, 10, 10, 0.7);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+nav.scrolled {
+  border-bottom-color: var(--border);
+}
+
+.nav-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  text-decoration: none;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.nav-logo .dot {
+  color: var(--accent);
+  font-size: 28px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  align-items: center;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+  .nav-links.mobile {
+    display: flex;
+    gap: 20px;
+  }
+  .nav-links.mobile .nav-link.cta-nav {
+    display: inline-block;
+  }
+}
+
+.cta-nav {
+  padding: 8px 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary) !important;
+  background: var(--bg-card);
+  transition: all 0.2s ease;
+}
+
+.cta-nav:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-bright);
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 120px 0 80px;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle at center, rgba(168, 143, 172, 0.12) 0%, transparent 60%);
+  filter: blur(60px);
+}
+
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle at center, rgba(168, 143, 172, 0.06) 0%, transparent 70%);
+  filter: blur(80px);
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-card);
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.hero-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.3); }
+}
+
+.hero-title {
+  font-size: clamp(56px, 9vw, 144px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 24px;
+}
+
+.hero-title .accent-dot {
+  color: var(--accent);
+}
+
+.hero-subtitle {
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 400;
+  color: var(--text-secondary);
+  max-width: 760px;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.hero-subtitle strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.hero-meta {
+  font-size: 16px;
+  color: var(--text-tertiary);
+  margin-bottom: 48px;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  letter-spacing: -0.01em;
+}
+
+.btn-primary {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+  background: var(--accent-bright);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--border-bright);
+  background: var(--bg-card);
+  transform: translateY(-1px);
+}
+
+.btn .arrow {
+  transition: transform 0.2s ease;
+}
+
+.btn:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.6; }
+  50% { transform: translateX(-50%) translateY(8px); opacity: 1; }
+}
+
+/* SECTIONS */
+section {
+  padding: var(--section-gap) 0;
+  position: relative;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin-bottom: 24px;
+  max-width: 900px;
+}
+
+.section-subtitle {
+  font-size: clamp(18px, 2vw, 22px);
+  color: var(--text-secondary);
+  max-width: 720px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* STATS SECTION */
+.stats {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.stats-header {
+  margin-bottom: 80px;
+  max-width: 800px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.stat {
+  background: var(--bg-primary);
+  padding: 56px 40px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+
+@media (max-width: 600px) {
+  .stat {
+    padding: 40px 28px;
+  }
+}
+
+.stat:hover {
+  background: var(--bg-secondary);
+}
+
+.stat-number {
+  font-size: clamp(56px, 6vw, 88px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.stat-label {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.stats-source {
+  margin-top: 80px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+/* HOW IT WORKS */
+.how {
+  background: var(--bg-secondary);
+}
+
+.how-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+  margin-top: 80px;
+}
+
+.how-card {
+  padding: 40px 32px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-card);
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.how-card:hover {
+  border-color: var(--border-bright);
+  transform: translateY(-4px);
+}
+
+.how-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.how-card:hover::before {
+  opacity: 0.6;
+}
+
+.how-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  color: var(--accent);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.how-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.how-text {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* FOR WHO */
+.for-who {
+  border-top: 1px solid var(--border);
+}
+
+.for-who-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .for-who-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.checklist li {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  font-size: 17px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.checklist .check {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.tag {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+}
+
+/* PILOT PROGRAM */
+.pilot {
+  background: var(--bg-secondary);
+  position: relative;
+  overflow: hidden;
+}
+
+.pilot::before {
+  content: '';
+  position: absolute;
+  top: -300px;
+  right: -300px;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(168, 143, 172, 0.08) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.pilot-box {
+  position: relative;
+  padding: clamp(40px, 6vw, 80px);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--bg-card);
+  margin-top: 64px;
+  backdrop-filter: blur(10px);
+}
+
+.pilot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+}
+
+@media (max-width: 900px) {
+  .pilot-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+.pilot-col h3 {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+
+.pilot-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.pilot-list li {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding-left: 24px;
+  position: relative;
+}
+
+.pilot-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.pilot-list li strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.pilot-note {
+  margin-top: 48px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+/* ABOUT */
+.about {
+  border-top: 1px solid var(--border);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 80px;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+.about-portrait {
+  aspect-ratio: 4/5;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.about-portrait::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 30%, var(--accent-dim) 0%, transparent 50%);
+}
+
+.portrait-initial {
+  font-size: 200px;
+  font-weight: 800;
+  color: var(--text-primary);
+  opacity: 0.15;
+  letter-spacing: -0.04em;
+  position: relative;
+  z-index: 1;
+}
+
+.about-content h2 {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 32px;
+}
+
+.about-text {
+  font-size: 17px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+
+.about-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.about-quote {
+  margin-top: 32px;
+  padding: 24px 28px;
+  border-left: 2px solid var(--accent);
+  background: var(--bg-card);
+  border-radius: 0 12px 12px 0;
+  font-size: 17px;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* CTA SECTION */
+.cta-section {
+  background: var(--bg-secondary);
+  text-align: center;
+  padding: clamp(96px, 14vw, 180px) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  height: 900px;
+  background: radial-gradient(circle, rgba(168, 143, 172, 0.1) 0%, transparent 60%);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.cta-content {
+  position: relative;
+  z-index: 1;
+}
+
+.cta-title {
+  font-size: clamp(40px, 7vw, 96px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 24px;
+}
+
+.cta-subtitle {
+  font-size: clamp(18px, 2vw, 22px);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 48px;
+  line-height: 1.5;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 64px 0 32px;
+  background: var(--bg-primary);
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.footer-logo {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: baseline;
+}
+
+.footer-logo .dot {
+  color: var(--accent);
+  font-size: 34px;
+}
+
+.footer-tagline {
+  font-size: 14px;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.footer-col h4 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 20px;
+}
+
+.footer-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-col a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.footer-col a:hover {
+  color: var(--text-primary);
+}
+
+.footer-bottom {
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* Animations */
+.fade-in {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in-delay-1 { transition-delay: 0.1s; }
+.fade-in-delay-2 { transition-delay: 0.2s; }
+.fade-in-delay-3 { transition-delay: 0.3s; }
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .hero {
+    padding: 100px 0 60px;
+  }
+  .nav-links { gap: 16px; }
+  .hero-cta { width: 100%; }
+  .hero-cta .btn { flex: 1; justify-content: center; }
+  .pilot-box {
+    padding: 32px 24px;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav id="nav">
+  <div class="container nav-inner">
+    <a href="#" class="nav-logo">hush<span class="dot">.</span></a>
+    <div class="nav-links">
+      <a href="#problem" class="nav-link">Le problème</a>
+      <a href="#how" class="nav-link">Comment ça marche</a>
+      <a href="#pilot" class="nav-link">Programme pilote</a>
+      <a href="#about" class="nav-link">À propos</a>
+      <a href="https://calendly.com/emilien-hush/hush-discovery-call" target="_blank" class="nav-link cta-nav">Discutons →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="hero-badge">
+      <span>Phase R&D · Mai 2026</span>
+    </div>
+    <h1 class="hero-title">
+      L'IA qui répond<br>à vos DMs<span class="accent-dot">.</span>
+    </h1>
+    <p class="hero-subtitle">
+      Un agent conversationnel qui parle <strong>dans votre ton</strong>, connaît votre catalogue <strong>par cœur</strong>, et répond à vos messages Instagram en moins de 60 secondes — <strong>24/7</strong>.
+    </p>
+    <p class="hero-meta">
+      Conçu pour les marques DTC qui veulent arrêter de perdre du temps et des ventes en privé.
+    </p>
+    <div class="hero-cta">
+      <a href="https://calendly.com/emilien-hush/hush-discovery-call" target="_blank" class="btn btn-primary">
+        Programme pilote R&D <span class="arrow">→</span>
+      </a>
+      <a href="#problem" class="btn btn-secondary">
+        Voir les chiffres
+      </a>
+    </div>
+  </div>
+  <div class="scroll-indicator">Scroll</div>
+</section>
+
+<!-- STATS / PROBLÈME -->
+<section class="stats" id="problem">
+  <div class="container">
+    <div class="stats-header fade-in">
+      <span class="section-eyebrow">Le constat</span>
+      <h2 class="section-title">Vos DMs sont votre canal de vente n°1. Et le plus mal exploité.</h2>
+      <p class="section-subtitle">
+        En 2026, le marché DTC français pèse plus de 3 milliards d'euros. Et la quasi-totalité de ces marques passe à côté du canal de conversion le plus puissant qu'elles ont : leur boîte de réception Instagram.
+      </p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="stats-grid fade-in">
+      <div class="stat">
+        <div class="stat-number">80%</div>
+        <div class="stat-label">des achats sur Instagram démarrent dans un DM</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">70%</div>
+        <div class="stat-label">des prospects partent ailleurs si vous ne répondez pas dans l'heure</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">4K€</div>
+        <div class="stat-label">de SAV invisible par mois pour une marque qui traite 2 000 DMs</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">60%</div>
+        <div class="stat-label">du volume DM est de la routine répétitive traitée par les fondateurs eux-mêmes</div>
+      </div>
+    </div>
+
+    <p class="stats-source fade-in">
+      Sources : Synadiet · Kolsquare · FashionNetwork · Meta for Business · Entretiens R&D hush engagés (2026)
+    </p>
+  </div>
+</section>
+
+<!-- COMMENT ÇA MARCHE -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-eyebrow">La solution</span>
+      <h2 class="section-title">Une IA qui sait ce qu'elle dit. Vraiment.</h2>
+      <p class="section-subtitle">
+        hush n'est pas un chatbot scripté. C'est un agent basé sur les grands modèles de langage les plus avancés (Claude, GPT) — capable de tenir une vraie conversation, adaptée à votre marque.
+      </p>
+    </div>
+
+    <div class="how-grid">
+      <div class="how-card fade-in">
+        <div class="how-icon">01</div>
+        <h3 class="how-title">Parle dans votre ton</h3>
+        <p class="how-text">On calibre l'agent sur des dizaines d'exemples de votre marque. Votre voice & tone unique reste intact. Pas de robot froid.</p>
+      </div>
+      <div class="how-card fade-in fade-in-delay-1">
+        <div class="how-icon">02</div>
+        <h3 class="how-title">Connaît votre catalogue</h3>
+        <p class="how-text">Votre catalogue produit complet est intégré. L'agent recommande, conseille, upsell — comme votre meilleure vendeuse.</p>
+      </div>
+      <div class="how-card fade-in fade-in-delay-2">
+        <div class="how-icon">03</div>
+        <h3 class="how-title">Répond en moins de 60 secondes</h3>
+        <p class="how-text">24h/24, 7j/7. Jamais de fatigue, jamais de mauvaise journée. Vos clientes obtiennent une réponse de qualité, à n'importe quelle heure.</p>
+      </div>
+      <div class="how-card fade-in fade-in-delay-3">
+        <div class="how-icon">04</div>
+        <h3 class="how-title">Sait quand passer la main</h3>
+        <p class="how-text">Cas sensibles (santé, plaintes, remboursements) : escalation automatique vers votre équipe. L'humain reste au centre quand ça compte.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POUR QUI -->
+<section class="for-who">
+  <div class="container">
+    <div class="for-who-content">
+      <div class="fade-in">
+        <span class="section-eyebrow">Pour qui</span>
+        <h2 class="section-title">Conçu pour les marques DTC qui vivent par Instagram.</h2>
+        <p class="section-subtitle">
+          Si votre marque correspond à ces critères, hush est probablement fait pour vous.
+        </p>
+        <ul class="checklist">
+          <li><span class="check">✓</span>Vous vendez en direct (Shopify, votre site)</li>
+          <li><span class="check">✓</span>Vous recevez 20+ DMs par jour sur Instagram</li>
+          <li><span class="check">✓</span>Vos clientes posent des questions personnalisées (conseils, ingrédients, routine, recommandations)</li>
+          <li><span class="check">✓</span>Vous (ou votre équipe) passez plus de 5h par semaine à gérer les DMs</li>
+          <li><span class="check">✓</span>Vous voulez préserver le ton humain et l'expertise de votre marque</li>
+        </ul>
+      </div>
+
+      <div class="fade-in fade-in-delay-1">
+        <span class="section-eyebrow">Verticales privilégiées</span>
+        <h2 class="section-title" style="font-size: clamp(28px, 3.5vw, 40px);">Compléments, beauty, lifestyle.</h2>
+        <p class="section-subtitle">
+          On se concentre d'abord sur les marques où les DMs sont qualitatifs et la marge soutient l'investissement IA.
+        </p>
+        <div class="tags-container">
+          <span class="tag">Compléments alimentaires</span>
+          <span class="tag">Nutricosmétique</span>
+          <span class="tag">Skincare</span>
+          <span class="tag">Haircare</span>
+          <span class="tag">Wellness féminin</span>
+          <span class="tag">Lifestyle DTC</span>
+          <span class="tag">Beauty clean</span>
+          <span class="tag">Bien-être</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMME PILOTE -->
+<section class="pilot" id="pilot">
+  <div class="container">
+    <div class="fade-in">
+      <span class="section-eyebrow">Programme pilote R&D</span>
+      <h2 class="section-title">Avant le launch officiel, 3 à 5 marques pilotes.</h2>
+      <p class="section-subtitle">
+        Pendant que je finalise le produit (commercialisation : printemps 2027), je sélectionne 3 à 5 marques pour une phase d'expérimentation gratuite de 60 à 90 jours.
+      </p>
+    </div>
+
+    <div class="pilot-box fade-in">
+      <div class="pilot-grid">
+        <div class="pilot-col">
+          <h3>Ce que vous obtenez</h3>
+          <ul class="pilot-list">
+            <li><strong>Déploiement complet</strong> de hush sur vos DMs Instagram pendant 60-90 jours</li>
+            <li><strong>Setup, opération et reporting</strong> mensuel — entièrement gratuit</li>
+            <li><strong>10 à 30 heures économisées</strong> par mois sur la gestion DM</li>
+            <li><strong>+20 à 40 % de conversion</strong> DM → ajout au panier estimé</li>
+            <li><strong>Valeur équivalente : 4 000 à 6 000 €</strong> en services</li>
+            <li><strong>Tarif early adopter (-30 %)</strong> si vous continuez en 2027</li>
+          </ul>
+        </div>
+        <div class="pilot-col">
+          <h3>Ce que vous donnez</h3>
+          <ul class="pilot-list">
+            <li><strong>Accès à votre catalogue</strong> et à vos DMs historiques (anonymisés au besoin)</li>
+            <li><strong>15 à 30 minutes par mois</strong> de feedback avec le founder</li>
+            <li><strong>Le droit d'utiliser vos résultats</strong> comme étude de cas (nominative ou anonymisée — votre choix)</li>
+            <li><strong>Un témoignage</strong> en fin de pilote (si vous êtes satisfait·e)</li>
+            <li>Aucun engagement financier — cadre R&D pur</li>
+            <li>Sortie possible à tout moment, préavis 7 jours</li>
+          </ul>
+        </div>
+      </div>
+      <p class="pilot-note">
+        Cadre juridique encadré · Conformité RGPD totale · Hébergement EU · Vos données ne servent jamais à entraîner les modèles
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- À PROPOS -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-portrait fade-in">
+        <div class="portrait-initial">e</div>
+      </div>
+      <div class="about-content fade-in fade-in-delay-1">
+        <span class="section-eyebrow">À propos</span>
+        <h2>Emilien Behague.<br>Ingénieur. Builder.</h2>
+        <p class="about-text">
+          <strong>Atomicien de propulsion nucléaire navale</strong>, formé au sein de la Marine Nationale française. Pendant des années, j'ai opéré sur des systèmes complexes où la rigueur et la précision n'étaient pas une option — c'était une condition de survie.
+        </p>
+        <p class="about-text">
+          Aujourd'hui, je consacre mon temps à <strong>construire hush</strong>. L'idée est née d'un constat simple : les marques DTC françaises sont en train de manquer la révolution de l'IA conversationnelle. Pendant que les leaders de la tech mondiale automatisent leurs interactions clients avec finesse, la majorité du marché FR perd encore des ventes faute de pouvoir répondre à un DM à 23h.
+        </p>
+        <p class="about-text">
+          hush est ma réponse à ça. Un projet construit avec la rigueur de l'ingénierie nucléaire, l'élégance des meilleurs produits SaaS, et le respect total du ton de chaque marque qui me fait confiance.
+        </p>
+        <div class="about-quote">
+          « Je suis actuellement en phase de R&D, avant commercialisation officielle au printemps 2027. Tout ce que je construis pendant cette période est testé, mesuré, et amélioré au contact direct des marques pilotes. »
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section">
+  <div class="container cta-content">
+    <h2 class="cta-title fade-in">
+      Discutons<span style="color: var(--accent);">.</span>
+    </h2>
+    <p class="cta-subtitle fade-in fade-in-delay-1">
+      15 minutes en visio pour comprendre votre réalité DM et voir si un pilote a du sens. Sans pression, sans pitch.
+    </p>
+    <div class="cta-buttons fade-in fade-in-delay-2">
+      <a href="https://calendly.com/emilien-hush/hush-discovery-call" target="_blank" class="btn btn-primary">
+        Réserver 15 min <span class="arrow">→</span>
+      </a>
+      <a href="https://instagram.com/hush.dm" target="_blank" class="btn btn-secondary">
+        DM @hush.dm
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-content">
+      <div>
+        <div class="footer-logo">hush<span class="dot">.</span></div>
+        <p class="footer-tagline">L'IA conversationnelle pour les marques DTC qui veulent transformer leurs DMs en revenus.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Le projet</h4>
+        <ul>
+          <li><a href="#problem">Le problème</a></li>
+          <li><a href="#how">Comment ça marche</a></li>
+          <li><a href="#pilot">Programme pilote</a></li>
+          <li><a href="#about">À propos</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="https://calendly.com/emilien-hush/hush-discovery-call" target="_blank">Réserver un call</a></li>
+          <li><a href="https://instagram.com/hush.dm" target="_blank">Instagram @hush.dm</a></li>
+          <li><a href="https://www.linkedin.com/in/emilien-behague-9697a1364" target="_blank">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 hush · Projet R&D · Emilien Behague</div>
+      <div>Conçu en France 🇫🇷</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Navigation scroll effect
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 20) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+});
+
+// Fade-in animations on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+});
+
+document.querySelectorAll('.fade-in').forEach((el) => {
+  observer.observe(el);
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    const href = this.getAttribute('href');
+    if (href === '#') return;
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
